@@ -1,7 +1,13 @@
 import { useState } from "react";
 
-const Blog = ({ blog, updateBlog }) => {
+const Blog = ({ user, blog, updateBlog, deleteBlog }) => {
   const [displayDetails, setDisplayDetails] = useState(false);
+
+  const handleDelete = () => {
+    if (window.confirm(`Deleting post "${blog.title}."`)) {
+      deleteBlog(blog.id);
+    }
+  };
 
   return (
     <div
@@ -29,6 +35,7 @@ const Blog = ({ blog, updateBlog }) => {
           <br />
           Posted by: {blog.user.name}
           <br />
+          {user.username === blog.user.username && <button onClick={handleDelete}>Remove</button>}
         </>
       )}
     </div>

@@ -85,6 +85,19 @@ const App = () => {
     }
   }
 
+  const deleteBlog = async(id) => {
+    try {
+      await blogService.remove(id);
+      handleStatus(
+        `deleted blog.`,
+        "success"
+      );
+      blogService.getAll().then((blogs) => setBlogs(blogs));
+    } catch (exception) {
+      handleStatus("Failed to delete blog.", "error");
+    }
+  }
+
   const loginForm = () => {
     return (
       <form onSubmit={handleLogin}>
@@ -161,7 +174,7 @@ const App = () => {
 
       <br />
       {blogs.sort((a,b) => a.likes < b.likes).map((blog) => (
-        <Blog key={blog.id} blog={blog} updateBlog={updateBlog}/>
+        <Blog key={blog.id} blog={blog} updateBlog={updateBlog} deleteBlog={deleteBlog} user={user}/>
       ))}
     </div>
   );
