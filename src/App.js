@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Blog from "./components/Blog";
+import BlogForm from "./components/BlogForm";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 
@@ -9,10 +10,6 @@ const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
-
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
 
   const [showBlogForm, setShowBlogForm] = useState(false);
 
@@ -66,9 +63,7 @@ const App = () => {
     window.localStorage.removeItem("blogUser");
   };
 
-  const handleBlogCreate = async (event) => {
-    event.preventDefault();
-
+  const createBlog = async (title, author, url) => {
     try {
       const addedBlog = await blogService.create({ title, author, url });
       handleStatus(
@@ -108,43 +103,34 @@ const App = () => {
     );
   };
 
-  const blogForm = () => {
-    return (
-      <form onSubmit={handleBlogCreate}>
-        <label htmlFor="title">Title: </label>
-        <input
-          type="text"
-          id="title"
-          required
-          value={title}
-          onChange={({ target }) => setTitle(target.value)}
-        />
-        <br />
-        <label htmlFor="author">Author: </label>
-        <input
-          type="text"
-          id="author"
-          required
-          value={author}
-          onChange={({ target }) => setAuthor(target.value)}
-        />
-        <br />
-        <label htmlFor="url">URL: </label>
-        <input
-          type="text"
-          id="url"
-          required
-          value={url}
-          onChange={({ target }) => setUrl(target.value)}
-        />
-        <br />
-        <button type="submit">Post</button>
-        <button type="button" onClick={() => setShowBlogForm(false)}>Cancel</button>
-      </form>
-    );
+  const formsDisplayer = (user) => {
+    if (user) {
+      return (
+        <div>
+          <p>
+            {user.name} logged in &nbsp;&nbsp;{" "}
+            <button onClick={handleLogout}>Logout</button>
+          </p>
+          {showBlogForm ? (
+            <>
+              <BlogForm createBlog={createBlog} />
+              <button type="button" onClick={() => setShowBlogForm(false)}>
+                Cancel
+              </button>
+            </>
+          ) : (
+            <button type="button" onClick={() => setShowBlogForm(true)}>
+              New Blog
+            </button>
+          )}
+        </div>
+      );
+    }
+
+    return loginForm();
   };
 
-  const notificationDisplay = ({msg, type}) => {
+  const notificationDisplay = ({ msg, type }) => {
     const color = type === "success" ? "green" : "red";
     const css = {
       border: `2px solid ${color}`,
@@ -152,28 +138,19 @@ const App = () => {
       color: color,
       margin: "1rem auto",
       padding: "0.8rem",
-      width: "90vw"
-    }
+      width: "90vw",
+    };
 
-    return <div style={css}>{msg}</div>
-  }
+    return <div style={css}>{msg}</div>;
+  };
   return (
     <div>
       <h2>Blogs</h2>
 
       {notification && notificationDisplay(notification)}
 
-      {user ? (
-        <div>
-          <p>
-            {user.name} logged in &nbsp;&nbsp;{" "}
-            <button onClick={handleLogout}>Logout</button>
-          </p>
-          {showBlogForm ? blogForm() : <button type="button" onClick={() => setShowBlogForm(true)}>New Blog</button>}
-        </div>
-      ) : (
-        loginForm()
-      )}
+      {formsDisplayer(user)}
+
       <br />
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
