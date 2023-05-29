@@ -13,7 +13,8 @@ const App = () => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
-  const [likes, setLikes] = useState(0);
+
+  const [showBlogForm, setShowBlogForm] = useState(false);
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -69,11 +70,12 @@ const App = () => {
     event.preventDefault();
 
     try {
-      const addedBlog = await blogService.create({ title, author, url, likes });
+      const addedBlog = await blogService.create({ title, author, url });
       handleStatus(
         `a new blog ${addedBlog.title} by ${addedBlog.author} added.`,
         "success"
       );
+      setShowBlogForm(false);
       blogService.getAll().then((blogs) => setBlogs(blogs));
     } catch (exception) {
       handleStatus("Failed to add new blog.", "error");
@@ -136,19 +138,12 @@ const App = () => {
           onChange={({ target }) => setUrl(target.value)}
         />
         <br />
-        <label htmlFor="likes">Likes: </label>
-        <input
-          type="number"
-          id="likes"
-          min={0}
-          value={likes}
-          onChange={({ target }) => setLikes(target.value)}
-        />
-        <br />
         <button type="submit">Post</button>
+        <button type="button" onClick={() => setShowBlogForm(false)}>Cancel</button>
       </form>
     );
   };
+
   const notificationDisplay = ({msg, type}) => {
     const color = type === "success" ? "green" : "red";
     const css = {
@@ -174,7 +169,7 @@ const App = () => {
             {user.name} logged in &nbsp;&nbsp;{" "}
             <button onClick={handleLogout}>Logout</button>
           </p>
-          {blogForm()}
+          {showBlogForm ? blogForm() : <button type="button" onClick={() => setShowBlogForm(true)}>New Blog</button>}
         </div>
       ) : (
         loginForm()
