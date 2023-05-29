@@ -5,8 +5,7 @@ import loginService from "./services/login";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
-  const [successMsg, setSuccessMsg] = useState(null);
-  const [errorMsg, setErrorMsg] = useState(null);
+  const [notification, setNotification] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
@@ -24,7 +23,7 @@ const App = () => {
     const userJson = window.localStorage.getItem("blogUser");
 
     if (userJson) {
-      const user = JSON.parse(userJson)
+      const user = JSON.parse(userJson);
       setUser(user);
       blogService.setToken(user.token);
     }
@@ -32,14 +31,10 @@ const App = () => {
 
   const handleStatus = (msg, type) => {
     const timeout = 5000;
-    if(type === "success"){
-      setSuccessMsg(msg);
-      setTimeout(() => setSuccessMsg(null), timeout);
-    } else{
-      setErrorMsg(msg);
-      setTimeout(() => setErrorMsg(null), timeout);
-    }
-  }
+
+    setNotification({ msg, type });
+    setTimeout(() => setNotification(null), timeout);
+  };
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -75,7 +70,10 @@ const App = () => {
 
     try {
       const addedBlog = await blogService.create({ title, author, url, likes });
-      handleStatus(`a new blog ${addedBlog.title} by ${addedBlog.author} added.`, "success");
+      handleStatus(
+        `a new blog ${addedBlog.title} by ${addedBlog.author} added.`,
+        "success"
+      );
       blogService.getAll().then((blogs) => setBlogs(blogs));
     } catch (exception) {
       handleStatus("Failed to add new blog.", "error");
@@ -151,10 +149,24 @@ const App = () => {
       </form>
     );
   };
+  const notificationDisplay = ({msg, type}) => {
+    const color = type === "success" ? "green" : "red";
+    const css = {
+      border: `2px solid ${color}`,
+      borderRadius: "10px",
+      color: color,
+      margin: "1rem auto",
+      padding: "0.8rem",
+      width: "90vw"
+    }
 
+    return <div style={css}>{msg}</div>
+  }
   return (
     <div>
       <h2>Blogs</h2>
+
+      {notification && notificationDisplay(notification)}
 
       {user ? (
         <div>
