@@ -160,7 +160,7 @@ const App = () => {
       {formsDisplayer(user)}
 
       <br />
-      {blogs.map((blog) => (
+      {blogs.sort((a,b) => a.likes < b.likes).map((blog) => (
         <Blog key={blog.id} blog={blog} updateBlog={updateBlog}/>
       ))}
     </div>
