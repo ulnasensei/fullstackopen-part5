@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, updateBlog }) => {
   const [displayDetails, setDisplayDetails] = useState(false);
 
   return (
@@ -20,7 +20,12 @@ const Blog = ({ blog }) => {
           <br />
           {blog.url}
           <br />
-          likes {blog.likes} <button>Like</button>
+          likes {blog.likes}{" "}
+          <button
+            onClick={() => updateBlog(blog.id, { likes: blog.likes + 1 })}
+          >
+            Like
+          </button>
           <br />
           Posted by: {blog.user.name}
           <br />

@@ -76,6 +76,14 @@ const App = () => {
       handleStatus("Failed to add new blog.", "error");
     }
   };
+  const updateBlog = async(id, data) => {
+    try {
+      await blogService.update(id, data);
+      blogService.getAll().then((blogs) => setBlogs(blogs));
+    } catch (exception) {
+      handleStatus("Failed to like blog.", "error");
+    }
+  }
 
   const loginForm = () => {
     return (
@@ -113,7 +121,7 @@ const App = () => {
           </p>
           {showBlogForm ? (
             <>
-              <BlogForm createBlog={createBlog} />
+              <BlogForm createBlog={createBlog}/>
               <button type="button" onClick={() => setShowBlogForm(false)}>
                 Cancel
               </button>
@@ -153,7 +161,7 @@ const App = () => {
 
       <br />
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} updateBlog={updateBlog}/>
       ))}
     </div>
   );
