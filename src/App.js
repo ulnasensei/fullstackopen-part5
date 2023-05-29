@@ -5,22 +5,41 @@ import loginService from "./services/login";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
+  const [successMsg, setSuccessMsg] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
 
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [url, setUrl] = useState("");
+  const [likes, setLikes] = useState(0);
+
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     const userJson = window.localStorage.getItem("blogUser");
 
-    if(userJson){
-      setUser(JSON.parse(userJson));
+    if (userJson) {
+      const user = JSON.parse(userJson)
+      setUser(user);
+      blogService.setToken(user.token);
     }
-  }, [])
+  }, []);
+
+  const handleStatus = (msg, type) => {
+    const timeout = 5000;
+    if(type === "success"){
+      setSuccessMsg(msg);
+      setTimeout(() => setSuccessMsg(null), timeout);
+    } else{
+      setErrorMsg(msg);
+      setTimeout(() => setErrorMsg(null), timeout);
+    }
+  }
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -31,24 +50,37 @@ const App = () => {
         password,
       });
 
+      handleStatus("login successful", "success");
+
       window.localStorage.setItem("blogUser", JSON.stringify(user));
       setUser(user);
+      blogService.setToken(user.token);
       setUsername("");
       setPassword("");
     } catch (exception) {
-      setErrorMsg("Wrong credentials");
-      setTimeout(() => {
-        setErrorMsg(null);
-      }, 5000);
+      handleStatus("Wrong credentials", "error");
     }
   };
 
   const handleLogout = (event) => {
     event.preventDefault();
+    handleStatus("logout successful", "success");
     setUser(null);
+    blogService.setToken(null);
     window.localStorage.removeItem("blogUser");
+  };
 
-  }
+  const handleBlogCreate = async (event) => {
+    event.preventDefault();
+
+    try {
+      const addedBlog = await blogService.create({ title, author, url, likes });
+      handleStatus(`a new blog ${addedBlog.title} by ${addedBlog.author} added.`, "success");
+      blogService.getAll().then((blogs) => setBlogs(blogs));
+    } catch (exception) {
+      handleStatus("Failed to add new blog.", "error");
+    }
+  };
 
   const loginForm = () => {
     return (
@@ -78,18 +110,42 @@ const App = () => {
 
   const blogForm = () => {
     return (
-      <form>
+      <form onSubmit={handleBlogCreate}>
         <label htmlFor="title">Title: </label>
-        <input type="text" id="title" required />
+        <input
+          type="text"
+          id="title"
+          required
+          value={title}
+          onChange={({ target }) => setTitle(target.value)}
+        />
         <br />
         <label htmlFor="author">Author: </label>
-        <input type="text" id="author" required />
+        <input
+          type="text"
+          id="author"
+          required
+          value={author}
+          onChange={({ target }) => setAuthor(target.value)}
+        />
         <br />
         <label htmlFor="url">URL: </label>
-        <input type="text" id="url" required />
+        <input
+          type="text"
+          id="url"
+          required
+          value={url}
+          onChange={({ target }) => setUrl(target.value)}
+        />
         <br />
         <label htmlFor="likes">Likes: </label>
-        <input type="number" id="likes" min={0} />
+        <input
+          type="number"
+          id="likes"
+          min={0}
+          value={likes}
+          onChange={({ target }) => setLikes(target.value)}
+        />
         <br />
         <button type="submit">Post</button>
       </form>
@@ -102,13 +158,16 @@ const App = () => {
 
       {user ? (
         <div>
-          <p>{user.name} logged in &nbsp;&nbsp; <button onClick={handleLogout}>Logout</button></p>
+          <p>
+            {user.name} logged in &nbsp;&nbsp;{" "}
+            <button onClick={handleLogout}>Logout</button>
+          </p>
           {blogForm()}
         </div>
       ) : (
         loginForm()
       )}
-      <br/>
+      <br />
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}
