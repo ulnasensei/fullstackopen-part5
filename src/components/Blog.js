@@ -14,7 +14,7 @@ const Blog = ({ user, blog, updateBlog, deleteBlog }) => {
   return (
     <div className='blog'>
       <div className='blog-simple'><span className='blog-title'>{blog.title}</span> by <span className='blog-author'>{blog.author}</span>{' '}
-        <button onClick={() => setDisplayDetails((current) => !current)}>
+        <button className='blog-toggle-btn' onClick={() => setDisplayDetails((current) => !current)}>
           {displayDetails ? 'Hide' : 'View'}
         </button></div>
 
