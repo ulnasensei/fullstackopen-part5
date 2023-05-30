@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
+import './Blog.css'
 
 const Blog = ({ user, blog, updateBlog, deleteBlog }) => {
   const [displayDetails, setDisplayDetails] = useState(false)
@@ -11,43 +12,38 @@ const Blog = ({ user, blog, updateBlog, deleteBlog }) => {
   }
 
   return (
-    <div
-      style={{
-        border: '1px solid black',
-        margin: '0.1rem',
-        padding: '0.3rem',
-      }}
-    >
-      {blog.title} by {blog.author}{' '}
-      <button onClick={() => setDisplayDetails((current) => !current)}>
-        {displayDetails ? 'Hide' : 'View'}
-      </button>
+    <div className='blog'>
+      <div className='blog-simple'><span className='blog-title'>{blog.title}</span> by <span className='blog-author'>{blog.author}</span>{' '}
+        <button onClick={() => setDisplayDetails((current) => !current)}>
+          {displayDetails ? 'Hide' : 'View'}
+        </button></div>
+
       {displayDetails && (
-        <>
+        <div className='blog-details'>
           <br />
-          {blog.url}
+          <span className='blog-url'>{blog.url}</span>
           <br />
-          likes {blog.likes}{' '}
+          <span className='blog-likes'>likes {blog.likes}</span>{' '}
           <button
-            onClick={() => updateBlog(blog.id, { likes: blog.likes + 1 })}
+            className='blog-likes-btn' onClick={() => updateBlog(blog.id, { likes: blog.likes + 1 })}
           >
             Like
           </button>
           <br />
-          Posted by: {blog.user.name}
+          <span className='blog-post-user'>Posted by: {blog.user.name}</span>
           <br />
-          {user.username === blog.user.username && <button onClick={handleDelete}>Remove</button>}
-        </>
+          {user.username === blog.user.username && <button className='blog-remove-btn' onClick={handleDelete}>Remove</button>}
+        </div>
       )}
     </div>
   )
 }
 
 Blog.propTypes = {
-  user: PropTypes.object.isRequired,
-  blog: PropTypes.object.isRequired,
-  updateBlog: PropTypes.func.isRequired,
-  deleteBlog: PropTypes.func.isRequired
+  user: PropTypes.object,
+  blog: PropTypes.object,
+  updateBlog: PropTypes.func,
+  deleteBlog: PropTypes.func
 }
 
 export default Blog
