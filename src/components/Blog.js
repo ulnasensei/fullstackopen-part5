@@ -1,32 +1,32 @@
-import { useState } from "react";
+import { useState } from 'react'
 
 const Blog = ({ user, blog, updateBlog, deleteBlog }) => {
-  const [displayDetails, setDisplayDetails] = useState(false);
+  const [displayDetails, setDisplayDetails] = useState(false)
 
   const handleDelete = () => {
     if (window.confirm(`Deleting post "${blog.title}."`)) {
-      deleteBlog(blog.id);
+      deleteBlog(blog.id)
     }
-  };
+  }
 
   return (
     <div
       style={{
-        border: "1px solid black",
-        margin: "0.1rem",
-        padding: "0.3rem",
+        border: '1px solid black',
+        margin: '0.1rem',
+        padding: '0.3rem',
       }}
     >
-      {blog.title} by {blog.author}{" "}
+      {blog.title} by {blog.author}{' '}
       <button onClick={() => setDisplayDetails((current) => !current)}>
-        {displayDetails ? "Hide" : "View"}
+        {displayDetails ? 'Hide' : 'View'}
       </button>
       {displayDetails && (
         <>
           <br />
           {blog.url}
           <br />
-          likes {blog.likes}{" "}
+          likes {blog.likes}{' '}
           <button
             onClick={() => updateBlog(blog.id, { likes: blog.likes + 1 })}
           >
@@ -39,7 +39,7 @@ const Blog = ({ user, blog, updateBlog, deleteBlog }) => {
         </>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Blog;
+export default Blog

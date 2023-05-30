@@ -1,100 +1,100 @@
-import { useState, useEffect } from "react";
-import Blog from "./components/Blog";
-import BlogForm from "./components/BlogForm";
-import blogService from "./services/blogs";
-import loginService from "./services/login";
+import { useState, useEffect } from 'react'
+import Blog from './components/Blog'
+import BlogForm from './components/BlogForm'
+import blogService from './services/blogs'
+import loginService from './services/login'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [notification, setNotification] = useState(null);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
+  const [blogs, setBlogs] = useState([])
+  const [notification, setNotification] = useState(null)
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [user, setUser] = useState(null)
 
-  const [showBlogForm, setShowBlogForm] = useState(false);
-
-  useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
-  }, []);
+  const [showBlogForm, setShowBlogForm] = useState(false)
 
   useEffect(() => {
-    const userJson = window.localStorage.getItem("blogUser");
+    blogService.getAll().then((blogs) => setBlogs(blogs))
+  }, [])
+
+  useEffect(() => {
+    const userJson = window.localStorage.getItem('blogUser')
 
     if (userJson) {
-      const user = JSON.parse(userJson);
-      setUser(user);
-      blogService.setToken(user.token);
+      const user = JSON.parse(userJson)
+      setUser(user)
+      blogService.setToken(user.token)
     }
-  }, []);
+  }, [])
 
   const handleStatus = (msg, type) => {
-    const timeout = 5000;
+    const timeout = 5000
 
-    setNotification({ msg, type });
-    setTimeout(() => setNotification(null), timeout);
-  };
+    setNotification({ msg, type })
+    setTimeout(() => setNotification(null), timeout)
+  }
 
   const handleLogin = async (event) => {
-    event.preventDefault();
+    event.preventDefault()
 
     try {
       const user = await loginService.login({
         username,
         password,
-      });
+      })
 
-      handleStatus("login successful", "success");
+      handleStatus('login successful', 'success')
 
-      window.localStorage.setItem("blogUser", JSON.stringify(user));
-      setUser(user);
-      blogService.setToken(user.token);
-      setUsername("");
-      setPassword("");
+      window.localStorage.setItem('blogUser', JSON.stringify(user))
+      setUser(user)
+      blogService.setToken(user.token)
+      setUsername('')
+      setPassword('')
     } catch (exception) {
-      handleStatus("Wrong credentials", "error");
+      handleStatus('Wrong credentials', 'error')
     }
-  };
+  }
 
   const handleLogout = (event) => {
-    event.preventDefault();
-    handleStatus("logout successful", "success");
-    setUser(null);
-    blogService.setToken(null);
-    window.localStorage.removeItem("blogUser");
-  };
+    event.preventDefault()
+    handleStatus('logout successful', 'success')
+    setUser(null)
+    blogService.setToken(null)
+    window.localStorage.removeItem('blogUser')
+  }
 
   const createBlog = async (title, author, url) => {
     try {
-      const addedBlog = await blogService.create({ title, author, url });
+      const addedBlog = await blogService.create({ title, author, url })
       handleStatus(
         `a new blog ${addedBlog.title} by ${addedBlog.author} added.`,
-        "success"
-      );
-      setShowBlogForm(false);
-      blogService.getAll().then((blogs) => setBlogs(blogs));
+        'success'
+      )
+      setShowBlogForm(false)
+      blogService.getAll().then((blogs) => setBlogs(blogs))
     } catch (exception) {
-      handleStatus("Failed to add new blog.", "error");
+      handleStatus('Failed to add new blog.', 'error')
     }
-  };
+  }
   const updateBlog = async(id, data) => {
     try {
-      await blogService.update(id, data);
-      blogService.getAll().then((blogs) => setBlogs(blogs));
+      await blogService.update(id, data)
+      blogService.getAll().then((blogs) => setBlogs(blogs))
     } catch (exception) {
-      handleStatus("Failed to like blog.", "error");
+      handleStatus('Failed to like blog.', 'error')
     }
   }
 
   const deleteBlog = async(id) => {
     try {
-      await blogService.remove(id);
+      await blogService.remove(id)
       handleStatus(
-        `deleted blog.`,
-        "success"
-      );
-      blogService.getAll().then((blogs) => setBlogs(blogs));
+        'deleted blog.',
+        'success'
+      )
+      blogService.getAll().then((blogs) => setBlogs(blogs))
     } catch (exception) {
-      handleStatus("Failed to delete blog.", "error");
+      handleStatus('Failed to delete blog.', 'error')
     }
   }
 
@@ -121,15 +121,15 @@ const App = () => {
         <br />
         <button type="submit">Login</button>
       </form>
-    );
-  };
+    )
+  }
 
   const formsDisplayer = (user) => {
     if (user) {
       return (
         <div>
           <p>
-            {user.name} logged in &nbsp;&nbsp;{" "}
+            {user.name} logged in &nbsp;&nbsp;{' '}
             <button onClick={handleLogout}>Logout</button>
           </p>
           {showBlogForm ? (
@@ -145,25 +145,25 @@ const App = () => {
             </button>
           )}
         </div>
-      );
+      )
     }
 
-    return loginForm();
-  };
+    return loginForm()
+  }
 
   const notificationDisplay = ({ msg, type }) => {
-    const color = type === "success" ? "green" : "red";
+    const color = type === 'success' ? 'green' : 'red'
     const css = {
       border: `2px solid ${color}`,
-      borderRadius: "10px",
+      borderRadius: '10px',
       color: color,
-      margin: "1rem auto",
-      padding: "0.8rem",
-      width: "90vw",
-    };
+      margin: '1rem auto',
+      padding: '0.8rem',
+      width: '90vw',
+    }
 
-    return <div style={css}>{msg}</div>;
-  };
+    return <div style={css}>{msg}</div>
+  }
   return (
     <div>
       <h2>Blogs</h2>
@@ -177,7 +177,7 @@ const App = () => {
         <Blog key={blog.id} blog={blog} updateBlog={updateBlog} deleteBlog={deleteBlog} user={user}/>
       ))}
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App
