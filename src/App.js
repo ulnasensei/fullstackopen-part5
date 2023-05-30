@@ -100,7 +100,7 @@ const App = () => {
 
   const loginForm = () => {
     return (
-      <form onSubmit={handleLogin}>
+      <form onSubmit={handleLogin} id='login-form'>
         <label htmlFor="username">Username: </label>
         <input
           type="text"
@@ -119,7 +119,7 @@ const App = () => {
           onChange={({ target }) => setPassword(target.value)}
         />
         <br />
-        <button type="submit">Login</button>
+        <button id='login-btn' type="submit">Login</button>
       </form>
     )
   }
@@ -140,7 +140,7 @@ const App = () => {
               </button>
             </>
           ) : (
-            <button type="button" onClick={() => setShowBlogForm(true)}>
+            <button id='new-blog-toggle' type="button" onClick={() => setShowBlogForm(true)}>
               New Blog
             </button>
           )}
@@ -162,7 +162,7 @@ const App = () => {
       width: '90vw',
     }
 
-    return <div style={css}>{msg}</div>
+    return <div style={css} className='notification'>{msg}</div>
   }
   return (
     <div>
@@ -173,7 +173,7 @@ const App = () => {
       {formsDisplayer(user)}
 
       <br />
-      {blogs.sort((a,b) => a.likes < b.likes).map((blog) => (
+      {blogs.sort((a,b) => b.likes - a.likes).map((blog) => (
         <Blog key={blog.id} blog={blog} updateBlog={updateBlog} deleteBlog={deleteBlog} user={user}/>
       ))}
     </div>

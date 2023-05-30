@@ -32,7 +32,7 @@ const Blog = ({ user, blog, updateBlog, deleteBlog }) => {
           <br />
           <span className='blog-post-user'>Posted by: {blog.user.name}</span>
           <br />
-          {user.username === blog.user.username && <button className='blog-remove-btn' onClick={handleDelete}>Remove</button>}
+          {user && user.username === blog.user.username && <button className='blog-remove-btn' onClick={handleDelete}>Remove</button>}
         </div>
       )}
     </div>
