@@ -35,3 +35,20 @@ test('details are shown when show button is clicked', async () => {
 
   expect(detailedView).toBeDefined()
 })
+
+test('event handler for like button works', async () => {
+  const mockHandler = jest.fn()
+  const { container } = render(
+    <Blog blog={blog} user={userData} updateBlog={mockHandler} />
+  )
+
+  const user = userEvent.setup()
+  const toggleButton = container.querySelector('.blog-toggle-btn')
+  await user.click(toggleButton)
+
+  const likeButton = container.querySelector('.blog-likes-btn')
+
+  for(let i = 0; i < 2; i++) await user.click(likeButton)
+
+  expect(mockHandler.mock.calls).toHaveLength(2)
+})
